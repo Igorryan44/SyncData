@@ -17,7 +17,7 @@ build/
 develop-eggs/
 dist/
 downloads/
-syncdata/datasets/
+syncdata/data/
 eggs/
 .eggs/
 lib/
