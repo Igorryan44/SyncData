@@ -21,9 +21,9 @@ def upload_file(client, file):
     found = client.bucket_exists(bucket_name=bucket_name)
     if not found:
         client.make_bucket(bucket_name=bucket_name)
-        logger.info("Bucket criado %s", bucket_name)
+        logger.info(f"Bucket criado '{bucket_name}'")
     else:
-        logger.info("Bucket %s já existe", bucket_name)
+        logger.info(f"Bucket '{bucket_name}' já existe")
 
     # Enviar o arquivo, renomeando-o no processo
     client.fput_object(
