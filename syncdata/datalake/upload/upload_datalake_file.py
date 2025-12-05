@@ -1,14 +1,19 @@
+
+import sys
 from minio import Minio
 from minio.error import S3Error
-from config.config_datalake import create_conection
 from pathlib import Path
 import logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
+current_file = Path(__file__).resolve()
+PROJECT_PATH = current_file.parent.parent.parent
+sys.path.append(str(PROJECT_PATH))
 
-PROJECT_PATH = Path('__file__').absolute().parent
+from datalake.config.config_datalake import create_conection
+
+logger = logging.getLogger()
 logger.info(PROJECT_PATH)
+logging.basicConfig(level=logging.INFO)
 
 def upload_file(client, file):
     # Arquivo a ser enviado
@@ -37,6 +42,6 @@ def upload_file(client, file):
 if __name__ == "__main__":
     try:
         minio_client = create_conection()
-        upload_file(minio_client, "cms_inpatient.csv")
+        upload_file(minio_client, "cms_inpatient.parquet")
     except S3Error as exc:
         logger.error(f"Erro: {exc}")
