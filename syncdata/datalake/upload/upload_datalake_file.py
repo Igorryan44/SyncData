@@ -14,13 +14,12 @@ from datalake.config.config_datalake import create_conection
 logger = logging.getLogger()
 logger.info(PROJECT_PATH)
 logging.basicConfig(level=logging.INFO)
+source_file = Path(f"{PROJECT_PATH}/data/ACGRBR.parquet")
 
 def upload_file(client, file):
-    # Arquivo a ser enviado
-    source_file = f"{PROJECT_PATH}/data/{file}"
     # Destino de envio no bucket
     bucket_name = "syncdata"
-    destination_file = f"{file}"
+    destination_file = f"{file.name}"
     
     logger.info("Tentando criar o bucket caso não exista")
     found = client.bucket_exists(bucket_name=bucket_name)
@@ -43,6 +42,6 @@ if __name__ == "__main__":
     try:
         logger.info("Estabelecendo conexão...")
         minio_client = create_conection()
-        upload_file(minio_client, "ACGRBR2000-2025.parquet")
+        upload_file(minio_client, source_file)
     except S3Error as exc:
         logger.error(f"Erro: {exc}")
