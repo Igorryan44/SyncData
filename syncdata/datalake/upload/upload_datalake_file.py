@@ -17,12 +17,12 @@ logging.basicConfig(level=logging.INFO)
 
 def upload_file(client, file):
     # Arquivo a ser enviado
-    source_file = f"{PROJECT_PATH}/syncdata/data/{file}"
+    source_file = f"{PROJECT_PATH}/data/{file}"
     # Destino de envio no bucket
     bucket_name = "syncdata"
     destination_file = f"{file}"
     
-    # Criar o bucket caso não exista
+    logger.info("Tentando criar o bucket caso não exista")
     found = client.bucket_exists(bucket_name=bucket_name)
     if not found:
         client.make_bucket(bucket_name=bucket_name)
@@ -41,7 +41,8 @@ def upload_file(client, file):
 
 if __name__ == "__main__":
     try:
+        logger.info("Estabelecendo conexão...")
         minio_client = create_conection()
-        upload_file(minio_client, "cms_inpatient.parquet")
+        upload_file(minio_client, "ACGRBR2000-2025.parquet")
     except S3Error as exc:
         logger.error(f"Erro: {exc}")
