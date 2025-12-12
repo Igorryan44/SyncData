@@ -1,7 +1,7 @@
 # Importar Imagem do Python
 FROM python:3.10.19
 
-WORKDIR /syncdata/syncdata/processamento/
+WORKDIR /syncdata/
 
 COPY . .
 
@@ -9,4 +9,4 @@ RUN pip install -r requirements.txt
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "extractor.py"]
+CMD ["python", "syncdata/processamento/extractor.py"]

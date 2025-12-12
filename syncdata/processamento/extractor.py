@@ -1,6 +1,5 @@
 
 import os
-import sys
 import pandas as pd
 from pysus import SINAN
 from pathlib import Path
@@ -17,7 +16,7 @@ SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 def create_conection():
     # Criar um cliente MinIO com o endpoint, access key e secret key
     client = Minio(
-        "localhost:9000",
+        "minio:9000",
         access_key=ACCESS_KEY,
         secret_key=SECRET_KEY,
         secure=False
@@ -42,28 +41,10 @@ datasets = sinan.get_files(dis_code="ACGR", year=years)
 
 logger.info(f"Total de arquivos a serem convertidos: {len(datasets)}")
 
-# Concatenação dos dataframes
-try:
 
-    dfs = []
+def main():
 
-    for file in datasets:
-        logger.info(f"Processando dataset: {file.name}")
-        df = pd.read_parquet(sinan.download(file).path)
-        dfs.append(df)
-
-    df_final = pd.concat(dfs)
-    df_buffer = BytesIO()
-    df_buffer.seek(0)
-
-
-    logger.info("Extração e concatenação concluídas com sucesso.")
-
-except Exception as e:
-    logger.warning(f"Processamento falhou com o erro: {e}")
-# logger.info(f"Arquivo final salvo em: {data_path.parent / 'data' / 'ACGRBR.parquet'}")
-
-def upload_file(client, df_parquet):
+    client = create_conection()
     # Destino de envio no bucket
     logger.info("Iniciando processamento de upload dos dados")
 
@@ -77,20 +58,34 @@ def upload_file(client, df_parquet):
     else:
         logger.info(f"Bucket '{bucket_name}' já existe")
 
-    client.put_object(
-    bucket_name="syncdata",
-    object_name="ACGRBR.parquet",
-    data=df_parquet,
-    length=df_parquet.getbuffer().nbytes,
-    content_type="application/octet-stream"
+    try:
+
+        for file in datasets:
+            logger.info(f"Processando dataset: {file.name}")
+            dataset = pd.read_parquet(sinan.download(file).path)
+            df_buffer = BytesIO()
+            df_buffer.seek(0)
+
+            client.put_object(
+                bucket_name="syncdata",
+                object_name=f"{file.name}.parquet",
+                data=df_buffer,
+                length=df_buffer.getbuffer().nbytes,
+                content_type="application/octet-stream"
     
-)
+    )
+
+        logger.info("Extração e concatenação concluídas com sucesso.")
+
+    except Exception as e:
+        logger.warning(f"Processamento falhou com o erro: {e}")
+
     
 
 if __name__ == "__main__":
     try:
         logger.info("Estabelecendo conexão...")
-        upload_file(create_conection(), df_buffer)
+        main()
         logger.info("Processamento concluído")
     except S3Error as exc:
         logger.error(f"Erro: {exc}")
