@@ -8,10 +8,17 @@ inclusos no **SINAN**, código [**ACGR**]
   
 Os dados obtidos são direcionados automaticamente para um Data Lake utilizando a biblioteca e a imagem Docker da ferramenta MinIO.  
   
+
+
+#### RUN:
+
+```
+sudo docker compose up --build
+```   
   
 ## Autores
 
-- [@Igorryan44](https://github.com/Igorryan44)
+[Igor Ryan](https://github.com/Igorryan44)
 
 
 ## Licença

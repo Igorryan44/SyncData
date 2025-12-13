@@ -13,15 +13,6 @@ load_dotenv()
 ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 
-def create_conection():
-    # Criar um cliente MinIO com o endpoint, access key e secret key
-    client = Minio(
-        "minio:9000",
-        access_key=ACCESS_KEY,
-        secret_key=SECRET_KEY,
-        secure=False
-    )
-    return client
 
 current_file = Path(__file__).resolve()
 PROJECT_PATH = current_file.parent.parent.parent
@@ -41,6 +32,16 @@ datasets = sinan.get_files(dis_code="ACGR", year=years)
 
 logger.info(f"Total de arquivos a serem convertidos: {len(datasets)}")
 
+def create_conection():
+    # Criar um cliente MinIO com o endpoint, access key e secret key
+    client = Minio(
+        "minio:9000",
+        access_key=ACCESS_KEY,
+        secret_key=SECRET_KEY,
+        secure=False
+    )
+    return client
+
 
 def main():
 
@@ -48,7 +49,7 @@ def main():
     # Destino de envio no bucket
     logger.info("Iniciando processamento de upload dos dados")
 
-    bucket_name = "syncdata"
+    bucket_name = "syncdata-bronze"
     
     logger.info("Tentando criar o bucket caso não exista")
     found = client.bucket_exists(bucket_name=bucket_name)
@@ -75,7 +76,7 @@ def main():
     
     )
 
-        logger.info("Extração e concatenação concluídas com sucesso.")
+        logger.info("Extração concluídas com sucesso.")
 
     except Exception as e:
         logger.warning(f"Processamento falhou com o erro: {e}")
